@@ -1,0 +1,303 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  font-family: "Arial", sans-serif;
+  background-color: #9c0202;
+  overflow-x: hidden;
+}
+
+/* Primeira tela */
+.container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* Carta com coração */
+.card {
+  width: 0;
+  height: 0;
+  border-top: 100px solid #eee;
+  border-right: 170px solid #ddd;
+  border-bottom: 100px solid #ccc;
+  border-left: 170px solid #ccc;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.card:hover {
+  transform: scale(1.05);
+}
+
+.heart {
+  width: 32px;
+  height: 32px;
+  background-color: #ff3838;
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+  animation: heartbeat 1.2s ease-in-out infinite;
+  z-index: 10;
+}
+
+.heart:before,
+.heart:after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: #ff3838;
+  border-radius: 50%;
+}
+
+.heart:before {
+  top: -50%;
+  left: 0;
+}
+
+.heart:after {
+  left: -50%;
+  top: 0;
+}
+
+@keyframes heartbeat {
+  0%,
+  25%,
+  100% {
+    transform: translate(-50%, -50%) rotate(45deg) scale(1);
+  }
+  50% {
+    transform: translate(-50%, -50%) rotate(45deg) scale(1.2);
+  }
+}
+
+/* Corações caindo */
+.falling-heart {
+  position: fixed;
+  top: -30px;
+  pointer-events: none;
+  opacity: 1;
+  animation: fall ease-in-out forwards;
+  z-index: 1000;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+@keyframes fall {
+  0% {
+    transform: translateY(-30px) translateX(0px) rotate(0deg) scale(0.5);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+    transform: translateY(10vh) translateX(10px) rotate(10deg) scale(1);
+  }
+  25% {
+    transform: translateY(25vh) translateX(-5px) rotate(-5deg) scale(1.1);
+  }
+  50% {
+    transform: translateY(50vh) translateX(15px) rotate(15deg) scale(1);
+  }
+  75% {
+    transform: translateY(75vh) translateX(-10px) rotate(-10deg) scale(0.9);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(100vh) translateX(5px) rotate(5deg) scale(0.7);
+    opacity: 0;
+  }
+}
+
+/* Segunda tela */
+.second-screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background-color: #9c0202;
+  width: 100%;
+}
+
+.second-screen.visible {
+  display: flex !important;
+}
+
+/* Container para todas as fotos */
+.foto-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: 15px 0;
+  padding: 0 10px;
+}
+
+/* Imagens responsivas */
+.foto-container img {
+  width: 100%;
+  max-width: 450px;
+  height: auto;
+  object-fit: contain;
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+}
+
+/* Foto 3 com coração ao lado */
+.foto3-wrapper {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 15px;
+  width: 100%;
+  max-width: 450px;
+  position: relative;
+}
+
+/* Coração decorativo */
+.decoracao-stars {
+  width: 70px !important;
+  height: auto !important;
+  position: absolute;
+  left: 0;
+  top: 15px;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* Imagem 3 */
+.foto3-img {
+  width: 60% !important;
+  max-width: 280px !important;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Foto 4: maior */
+.foto4 img {
+  max-width: 500px;
+}
+
+/* Pirâmide: maior e mais próxima da foto 5 */
+.piramede {
+  margin-top: -15px;
+}
+
+.piramede img {
+  max-width: 500px;
+}
+
+/* Responsividade para tablets */
+@media (max-width: 768px) {
+  .foto-container {
+    margin: 12px 0;
+  }
+
+  .foto-container img {
+    max-width: 400px;
+  }
+
+  .foto3-wrapper {
+    max-width: 400px;
+    gap: 10px;
+  }
+
+  .decoracao-stars {
+    width: 16px !important;
+    top: 10px;
+  }
+
+  .foto3-img {
+    width: 65% !important;
+    max-width: 250px !important;
+  }
+
+  .foto4 img {
+    max-width: 420px;
+  }
+
+  .piramede {
+    margin-top: -10px;
+  }
+
+  .piramede img {
+    max-width: 450px;
+  }
+}
+
+/* Responsividade para celulares */
+@media (max-width: 480px) {
+  .second-screen {
+    padding: 10px 5px;
+  }
+
+  .foto-container {
+    margin: 10px 0;
+    padding: 0 5px;
+  }
+
+  .foto-container img {
+    max-width: 320px;
+  }
+
+  .foto3-wrapper {
+    max-width: 320px;
+    gap: 8px;
+  }
+
+  .decoracao-stars {
+    width: 14px !important;
+    top: 8px;
+    left: 5px;
+  }
+
+  .foto3-img {
+    width: 70% !important;
+    max-width: 220px !important;
+  }
+
+  .foto4 img {
+    max-width: 340px;
+  }
+
+  .piramede {
+    margin-top: -8px;
+  }
+
+  .piramede img {
+    max-width: 350px;
+  }
+}
+
+/* Responsividade para celulares pequenos */
+@media (max-width: 360px) {
+  .foto-container img {
+    max-width: 280px;
+  }
+
+  .foto3-wrapper {
+    max-width: 280px;
+  }
+
+  .foto3-img {
+    width: 75% !important;
+    max-width: 200px !important;
+  }
+
+  .foto4 img {
+    max-width: 300px;
+  }
+
+  .piramede img {
+    max-width: 310px;
+  }
+}
