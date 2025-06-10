@@ -187,13 +187,23 @@ body {
   max-width: 500px;
 }
 
-/* Pirâmide: maior e mais próxima da foto 5 */
+/* Foto 6: mesmo tamanho da foto 4 */
+.foto6 img {
+  max-width: 530px;
+}
+
+/* Foto 7: mesmo tamanho da foto 4 */
+.foto7 img {
+  max-width: 530px;
+}
+
+/* Pirâmide: menor que antes */
 .piramede {
   margin-top: -15px;
 }
 
 .piramede img {
-  max-width: 520px;
+  max-width: 380px;
 }
 
 /* Responsividade para tablets */
@@ -225,12 +235,20 @@ body {
     max-width: 420px;
   }
 
+  .foto6 img {
+    max-width: 470px;
+  }
+
+  .foto7 img {
+    max-width: 470px;
+  }
+
   .piramede {
     margin-top: -10px;
   }
 
   .piramede img {
-    max-width: 450px;
+    max-width: 370px;
   }
 }
 
@@ -269,12 +287,20 @@ body {
     max-width: 340px;
   }
 
+  .foto6 img {
+    max-width: 370px;
+  }
+
+  .foto7 img {
+    max-width: 370px;
+  }
+
   .piramede {
     margin-top: -8px;
   }
 
   .piramede img {
-    max-width: 350px;
+    max-width: 280px;
   }
 }
 
@@ -297,7 +323,15 @@ body {
     max-width: 300px;
   }
 
+  .foto6 img {
+    max-width: 360px;
+  }
+
+  .foto7 img {
+    max-width: 360px;
+  }
+
   .piramede img {
-    max-width: 310px;
+    max-width: 280px;
   }
 }
