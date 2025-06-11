@@ -243,6 +243,15 @@ body {
     max-width: 470px;
   }
 
+   .staraEndcoraçao img {
+    max-width: 430px;
+  }
+
+  .foto8 img {
+    max-width: 430px;
+  }
+
+
   .piramede {
     margin-top: -10px;
   }
@@ -295,6 +304,14 @@ body {
     max-width: 370px;
   }
 
+  .staraEndcoraçao img {
+    max-width: 350px;
+  }
+
+  .foto8 img {
+    max-width: 350px;
+  }
+
   .piramede {
     margin-top: -8px;
   }
@@ -330,6 +347,15 @@ body {
   .foto7 img {
     max-width: 360px;
   }
+
+  .staraEndcoraçao img {
+    max-width: 310px;
+  }
+
+  .foto8 img {
+    max-width: 310px;
+  }
+
 
   .piramede img {
     max-width: 280px;
