@@ -45,6 +45,7 @@ function preloadImages() {
     "img/7.png",
     "img/8.png",
     "img/9.png",
+    "img/10.png",
     "img/piramede.png",
     "img/piramede2.png",
     "img/stars.png",
@@ -71,10 +72,14 @@ class PhotoCarousel {
   constructor() {
     this.currentSlide = 0
     this.slides = document.querySelectorAll(".carousel-slide")
-    this.indicators = document.querySelectorAll(".indicator")
     this.carousel = document.querySelector(".carousel-container")
     this.autoplayInterval = null
     this.isAutoplayPaused = false
+    this.isDragging = false
+    this.startX = 0
+    this.currentTranslate = 0
+    this.prevTranslate = 0
+    this.animationID = 0
 
     this.init()
   }
@@ -86,82 +91,15 @@ class PhotoCarousel {
 
   setupEventListeners() {
     // Touch/Swipe events
-    let startX = 0
-    let startY = 0
-    let isDragging = false
-
-    this.carousel.addEventListener("touchstart", (e) => {
-      startX = e.touches[0].clientX
-      startY = e.touches[0].clientY
-      isDragging = true
-      this.pauseAutoplay()
-    })
-
-    this.carousel.addEventListener("touchmove", (e) => {
-      if (!isDragging) return
-      e.preventDefault()
-    })
-
-    this.carousel.addEventListener("touchend", (e) => {
-      if (!isDragging) return
-
-      const endX = e.changedTouches[0].clientX
-      const endY = e.changedTouches[0].clientY
-      const diffX = startX - endX
-      const diffY = startY - endY
-
-      // Verifica se é um swipe horizontal
-      if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
-        if (diffX > 0) {
-          this.nextSlide()
-        } else {
-          this.prevSlide()
-        }
-      }
-
-      isDragging = false
-      this.resumeAutoplay()
-    })
+    this.carousel.addEventListener("touchstart", this.touchStart.bind(this))
+    this.carousel.addEventListener("touchmove", this.touchMove.bind(this))
+    this.carousel.addEventListener("touchend", this.touchEnd.bind(this))
 
     // Mouse events para desktop
-    let mouseStartX = 0
-    let isMouseDragging = false
-
-    this.carousel.addEventListener("mousedown", (e) => {
-      mouseStartX = e.clientX
-      isMouseDragging = true
-      this.pauseAutoplay()
-      e.preventDefault()
-    })
-
-    this.carousel.addEventListener("mousemove", (e) => {
-      if (!isMouseDragging) return
-      e.preventDefault()
-    })
-
-    this.carousel.addEventListener("mouseup", (e) => {
-      if (!isMouseDragging) return
-
-      const diffX = mouseStartX - e.clientX
-
-      if (Math.abs(diffX) > 50) {
-        if (diffX > 0) {
-          this.nextSlide()
-        } else {
-          this.prevSlide()
-        }
-      }
-
-      isMouseDragging = false
-      this.resumeAutoplay()
-    })
-
-    this.carousel.addEventListener("mouseleave", () => {
-      if (isMouseDragging) {
-        isMouseDragging = false
-        this.resumeAutoplay()
-      }
-    })
+    this.carousel.addEventListener("mousedown", this.mouseDown.bind(this))
+    this.carousel.addEventListener("mousemove", this.mouseMove.bind(this))
+    this.carousel.addEventListener("mouseup", this.mouseUp.bind(this))
+    this.carousel.addEventListener("mouseleave", this.mouseLeave.bind(this))
 
     // Pausa autoplay quando hover
     this.carousel.addEventListener("mouseenter", () => {
@@ -171,6 +109,103 @@ class PhotoCarousel {
     this.carousel.addEventListener("mouseleave", () => {
       this.resumeAutoplay()
     })
+  }
+
+  touchStart(e) {
+    this.startX = e.touches[0].clientX
+    this.isDragging = true
+    this.pauseAutoplay()
+  }
+
+  touchMove(e) {
+    if (!this.isDragging) return
+    e.preventDefault()
+    const currentX = e.touches[0].clientX
+    const diff = this.startX - currentX
+
+    // Adiciona um pequeno movimento visual durante o arrasto
+    if (Math.abs(diff) > 10) {
+      const activeSlide = this.slides[this.currentSlide]
+      const moveX = -diff / 10
+      activeSlide.style.transform = `translateX(${moveX}px) scale(1)`
+    }
+  }
+
+  touchEnd(e) {
+    if (!this.isDragging) return
+
+    const endX = e.changedTouches[0].clientX
+    const diff = this.startX - endX
+
+    // Reseta qualquer transformação aplicada durante o arrasto
+    const activeSlide = this.slides[this.currentSlide]
+    activeSlide.style.transform = ""
+
+    // Verifica se é um swipe horizontal
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) {
+        this.nextSlide()
+      } else {
+        this.prevSlide()
+      }
+    }
+
+    this.isDragging = false
+    this.resumeAutoplay()
+  }
+
+  mouseDown(e) {
+    this.startX = e.clientX
+    this.isDragging = true
+    this.pauseAutoplay()
+    e.preventDefault()
+  }
+
+  mouseMove(e) {
+    if (!this.isDragging) return
+    e.preventDefault()
+
+    const currentX = e.clientX
+    const diff = this.startX - currentX
+
+    // Adiciona um pequeno movimento visual durante o arrasto
+    if (Math.abs(diff) > 10) {
+      const activeSlide = this.slides[this.currentSlide]
+      const moveX = -diff / 10
+      activeSlide.style.transform = `translateX(${moveX}px) scale(1)`
+    }
+  }
+
+  mouseUp(e) {
+    if (!this.isDragging) return
+
+    const diff = this.startX - e.clientX
+
+    // Reseta qualquer transformação aplicada durante o arrasto
+    const activeSlide = this.slides[this.currentSlide]
+    activeSlide.style.transform = ""
+
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) {
+        this.nextSlide()
+      } else {
+        this.prevSlide()
+      }
+    }
+
+    this.isDragging = false
+    this.resumeAutoplay()
+  }
+
+  mouseLeave() {
+    if (this.isDragging) {
+      // Reseta qualquer transformação aplicada durante o arrasto
+      const activeSlide = this.slides[this.currentSlide]
+      activeSlide.style.transform = ""
+
+      this.isDragging = false
+      this.resumeAutoplay()
+    }
   }
 
   goToSlide(index) {
@@ -226,26 +261,28 @@ class MusicPlayer {
     this.isPlaying = false
     this.audio = new Audio()
     this.volume = 0.7
+    this.isChangingTrack = false
+    this.direction = "next" // 'next' ou 'prev'
 
     // Lista de músicas - você pode adicionar suas músicas aqui
     this.playlist = [
       {
-        title: "Música Romântica 1",
+        title: "Eu Amo Você",
         artist: "Tim Maia",
         src: "audio/EuAmoVc.mp3",
         cover: "img/euAmoLogo.png",
       },
       {
-        title: "Música Romântica 2",
-        artist: "Artista 2",
-        src: "audio/musica2.mp3",
-        cover: "img/cover2.jpg",
+        title: "Velha infancia",
+        artist: "Tribalistas",
+        src: "audio/velhaInf.mp3",
+        cover: "img/m1.png",
       },
       {
-        title: "Música Romântica 3",
-        artist: "Artista 3",
-        src: "audio/musica3.mp3",
-        cover: "img/cover3.jpg",
+        title: "Cartel 5 estrela",
+        artist: "Cartel mcs",
+        src: "audio/5.mp3",
+        cover: "img/estrelas.png",
       },
     ]
 
@@ -270,8 +307,7 @@ class MusicPlayer {
     this.musicTitle = document.getElementById("musicTitle")
     this.musicArtist = document.getElementById("musicArtist")
     this.albumImage = document.getElementById("albumImage")
-    this.volumeBar = document.getElementById("volumeBar")
-    this.volumeFill = document.getElementById("volumeFill")
+    this.albumCover = document.getElementById("albumCover")
     this.musicPlayer = document.querySelector(".music-player")
   }
 
@@ -283,9 +319,6 @@ class MusicPlayer {
 
     // Barra de progresso
     this.progressBar.addEventListener("click", (e) => this.seek(e))
-
-    // Controle de volume
-    this.volumeBar.addEventListener("click", (e) => this.setVolume(e))
 
     // Eventos do áudio
     this.audio.addEventListener("loadedmetadata", () => this.updateDuration())
@@ -333,24 +366,56 @@ class MusicPlayer {
   }
 
   loadTrack(index) {
+    if (this.isChangingTrack) return
+
     const track = this.playlist[index]
     if (!track) return
 
-    this.currentTrack = index
-    this.audio.src = track.src
-    this.musicTitle.textContent = track.title
-    this.musicArtist.textContent = track.artist
+    // Animação de transição
+    this.animateTrackChange()
 
-    // Carrega a capa se existir
-    if (track.cover) {
-      this.albumImage.src = track.cover
-      this.albumImage.style.display = "block"
+    setTimeout(() => {
+      this.currentTrack = index
+      this.audio.src = track.src
+      this.musicTitle.textContent = track.title
+      this.musicArtist.textContent = track.artist
+
+      // Carrega a capa se existir
+      if (track.cover) {
+        this.albumImage.src = track.cover
+        this.albumImage.style.display = "block"
+      } else {
+        this.albumImage.style.display = "none"
+      }
+
+      this.audio.volume = this.volume
+
+      // Completa a animação
+      setTimeout(() => {
+        this.isChangingTrack = false
+        this.albumCover.classList.remove("slide-out-left", "slide-out-right")
+        this.albumCover.classList.remove("slide-in-left", "slide-in-right")
+      }, 500)
+    }, 500)
+  }
+
+  animateTrackChange() {
+    this.isChangingTrack = true
+
+    // Animação de saída
+    if (this.direction === "next") {
+      this.albumCover.classList.add("slide-out-left")
+      setTimeout(() => {
+        this.albumCover.classList.remove("slide-out-left")
+        this.albumCover.classList.add("slide-in-right")
+      }, 500)
     } else {
-      this.albumImage.style.display = "none"
+      this.albumCover.classList.add("slide-out-right")
+      setTimeout(() => {
+        this.albumCover.classList.remove("slide-out-right")
+        this.albumCover.classList.add("slide-in-left")
+      }, 500)
     }
-
-    this.audio.volume = this.volume
-    this.updateVolumeDisplay()
   }
 
   togglePlay() {
@@ -380,18 +445,26 @@ class MusicPlayer {
   }
 
   nextTrack() {
+    if (this.isChangingTrack) return
+    this.direction = "next"
     const nextIndex = (this.currentTrack + 1) % this.playlist.length
     this.loadTrack(nextIndex)
     if (this.isPlaying) {
-      this.play()
+      setTimeout(() => {
+        this.play()
+      }, 1000)
     }
   }
 
   prevTrack() {
+    if (this.isChangingTrack) return
+    this.direction = "prev"
     const prevIndex = (this.currentTrack - 1 + this.playlist.length) % this.playlist.length
     this.loadTrack(prevIndex)
     if (this.isPlaying) {
-      this.play()
+      setTimeout(() => {
+        this.play()
+      }, 1000)
     }
   }
 
@@ -399,14 +472,6 @@ class MusicPlayer {
     const rect = this.progressBar.getBoundingClientRect()
     const percent = (e.clientX - rect.left) / rect.width
     this.audio.currentTime = percent * this.audio.duration
-  }
-
-  setVolume(e) {
-    const rect = this.volumeBar.getBoundingClientRect()
-    const percent = (e.clientX - rect.left) / rect.width
-    this.volume = Math.max(0, Math.min(1, percent))
-    this.audio.volume = this.volume
-    this.updateVolumeDisplay()
   }
 
   updateProgress() {
@@ -421,10 +486,6 @@ class MusicPlayer {
     this.totalTimeEl.textContent = this.formatTime(this.audio.duration)
   }
 
-  updateVolumeDisplay() {
-    this.volumeFill.style.width = this.volume * 100 + "%"
-  }
-
   formatTime(seconds) {
     if (isNaN(seconds)) return "0:00"
     const mins = Math.floor(seconds / 60)
@@ -433,11 +494,12 @@ class MusicPlayer {
   }
 
   showLoading() {
-    this.musicTitle.textContent = "Carregando..."
+    // Não altera o título durante o carregamento
+    // Mantém o título da música atual
   }
 
   hideLoading() {
-    // Título será atualizado quando a música carregar
+    // Não faz nada, pois o título já está definido
   }
 }
 
@@ -453,34 +515,36 @@ card.addEventListener("click", () => {
 
   // Inicializa o player de música imediatamente quando clica no envelope
   musicPlayer = new MusicPlayer()
-  // Inicia a reprodução imediatamente
+
+  // Inicia a reprodução imediatamente sem delay
   musicPlayer.play()
 
+  // Reduzir o tempo de espera para a transição
   setTimeout(() => {
     firstScreen.style.display = "none"
     secondScreen.classList.add("visible")
     document.body.style.overflowY = "auto"
 
     // Carrega as imagens de forma progressiva
-    const images = document.querySelectorAll(".second-screen img");
+    const images = document.querySelectorAll(".second-screen img")
     images.forEach((img, index) => {
       setTimeout(() => {
-        img.style.opacity = "1";
-      }, index * 200);
-    });
+        img.style.opacity = "1"
+      }, index * 200)
+    })
 
     // Inicializa o carrossel após as imagens carregarem
     setTimeout(() => {
-      new PhotoCarousel();
-    }, 2000);
-  }, 3000);
+      new PhotoCarousel()
+    }, 1500)
+  }, 1500) // Reduzido de 3000 para 1500ms
+})
 
-  // Adiciona efeito de hover no cartão
-  card.addEventListener("mouseover", () => {
-    card.style.transform = "scale(1.05)";
-  });
+// Adiciona efeito de hover no cartão
+card.addEventListener("mouseover", () => {
+  card.style.transform = "scale(1.05)"
+})
 
-  card.addEventListener("mouseout", () => {
-    card.style.transform = "scale(1)";
-  });
-});
+card.addEventListener("mouseout", () => {
+  card.style.transform = "scale(1)"
+})
